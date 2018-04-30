@@ -10,55 +10,63 @@ load("aula-02/data/dados_exercicio.RData")
 ## Dica 1: No material sobre estruturas de dados vimos como exibir uma prévia do conteúdo de uma variável com 2 funções diferentes
 ## Dica 2: Na primeira aula vimos uma função do RStudio que permite visualizar o conteúdo de uma variável, mas neste caso 
 ##         quero ver uma saída na Console.
+print(acessos_alunos)
 ### # ####
-
 
 
 ### 2 ###
 ## Quantos elementos a variável acessos_alunos possui? Utilize uma função do R que retorna o tamanho da variável.
-
+##
 ## Dica: Vimos um exemplo no mesmo material sobre estruturas de dados
+length(acessos_alunos)
 ### # ###
-
 
 
 ### 3 ###
 ## Utilizando o seu código de aluno da Uniritter como nome de um valor da lista, imprima uma linha informando quantos acessos
 ## você fez. A linha deve ser impressa na Console, com um texto que diga o seu código de aluno e o valor conforme o seguinte exemplo:
 ## "O aluno <alu...> realizou N acessos."
-
 ## Dica 1: Utilize a função paste() para composição do texto que será impresso. 
 ## Dica 2: Vimos exemplos disto nos materiais dos tipos numéricos e das estruturas de dados.
+aluno <- "alu201830118"
+paste("O aluno", aluno, "realizou", acessos_alunos$alu201830118 ,"acessos.")
 ### # ###
-
 
 
 ### 4 ###
 ## A operação abaixo cria um vetor com todas as quantidades de acessos por aluno.
 acessos <- unlist(acessos_alunos)
-
+##
 ## Após a criação deste vetor, determine quantos colegas fizeram mais acessos que você.
 ## Faça isso em 3 etapas: 
 ## 1. Crie uma variável com o resultado de um teste de comparação (relacional) entre o seu número de acessos e os demais.
 ## 2. Com uma operação de indexação, crie um outro vetor contendo somente os valores maiores
 ## 3. Determine o tamanho do vetor da operação 2, imprimindo o resultado na Console
+########
+## 1. Result
+x <- acessos > acessos["alu201830118"]
+print(x)
+## 2. Result
+y <- which(x)
+print(y)
+## 3. Result
+length(y)
+print(y)
 ### # ###
-
 
 
 ### 5 ###
 ## Combine todas as etapas acima em uma única chamada, sem a criação dos vetores auxiliares
+length(which(acessos > acessos["alu201830118"]))
 ### # ###
-
 
 
 ### 6 ###
 ## Agora determine quantos colegas fizeram menos acessos que você. 
 ## Faça isso utilizando a função sum!
-
 ## Dica: Lembre que falamos sobre como o R faz conversões implícitas entre o tipo lógico e tipos numéricos
+sum(acessos < acessos["alu201830118"])
 ### # ###
-
 
 
 ### 7 ###
@@ -67,18 +75,19 @@ acessos <- unlist(acessos_alunos)
 ##   - Alunos que acessaram, mas menos que 10 vezes, recebem 1 ponto
 ##   - Alunos que acessaram 10 vezes ou mais recebem 2 pontos
 ## Crie um vetor chamado notas com a nota de cada aluno, na mesma ordem do vetor de acessos criado para o exercício 4.
-
 ## Dica: Pode ser mais fácil se iniciar o vetor notas como uma cópia do vetor acessos, modificando os valores conforme as regras
 ## OBSERVAÇÃO :: Não avaliarei participação na forma do enunciado deste exercício. 
+notas[which(acessos == 0)] <- NA;
+notas[which(acessos > 0 & acessos < 10)] <- 1;
+notas[which(acessos >= 10)] <- 2;
+# Linha única: notas <- ifelse(acessos == 0, NA, ifelse(acessos < 10, 1, 2))
 ### # ###
-
 
 
 ### 8 ###
 ## Visualização da quantidade de alunos com cada nota de participação. Esta não é uma atividade, apenas uma ilustração de como
 ## criar uma tabela com esta contagem
 table(notas)
-
 
 
 ### 9 ###
@@ -89,12 +98,27 @@ acessos_alunos_e_guest$guest <- NA
 
 ## Repita as atividades 4, 5, 6, e 7 utilizando o acessos_com_guest no lugar da lista acessos_alunos.
 ## Tome o devido cuidado de sempre criar variáveis com nomes diferentes das já utilizadas! 
-
+# 4.
+acessos_com_guest <- unlist(acessos_alunos_e_guest)
+## 4.1. Result
+x_guest <- acessos_com_guest > acessos_com_guest["alu201830118"]
+print(x_guest)
+## 4.2. Result
+y_guest <- which(x_guest)
+print(y_guest)
+## 4.3. Result
+length(y_guest)
+print(y_guest)
+# 5.
+length(which(acessos_com_guest > acessos_com_guest["alu201830118"]))
+# 6.
+sum(acessos_com_guest < acessos_com_guest["alu201830118"])
+# 7.
+notas_com_guest <- ifelse(acessos_com_guest == 0, NA, ifelse(acessos_com_guest < 10, 1, 2))
 
 
 ### 10 ###
 ## Responda as seguintes perguntas:
-
 
 # 1. Houve modificação no número de alunos com mais e com menos acessos que você?
 
@@ -106,3 +130,5 @@ acessos_alunos_e_guest$guest <- NA
 # 4. Execute o comando abaixo para ler a documentação da função sum e veja se há como modificar a chamada da função sum na presença
 #    de NAs. Teste os exemplos da página de help da função sum.
 help(sum)
+##
+
