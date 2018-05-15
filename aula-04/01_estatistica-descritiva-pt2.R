@@ -99,7 +99,7 @@ subset_salarios %>%
 ## ------------------------------------------------------------------------
 set.seed(1234)
 valores_aleatorios_uniforme <- runif(n = 300, min = 1000, max = 5000)
-
+0
 ocorrencias_valores_aleatorios <- table(valores_aleatorios_uniforme)
 
 # Quantas ocorrências do valor mais frequente?
