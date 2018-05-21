@@ -14,6 +14,11 @@ salarios <- read_csv("aula-03/data/201802_dados_salarios_servidores.csv.gz")
 ## 
 ### # ####
 
+cotacao_dolar <- 3.2428
+
+salarios %>%
+  mutate(REMUNERACAO_FINAL = REMUNERACAO_REAIS + (REMUNERACAO_DOLARES * cotacao_dolar)) %>%
+  filter(REMUNERACAO_FINAL >= 900) -> salarios
 
 ### 2 ####
 ## 
@@ -26,6 +31,14 @@ salarios %>% count(UF_EXERCICIO) %>% pull(UF_EXERCICIO) -> ufs # EXEMPLO
 ## 
 ### # ####
 
+salarios %>%
+  filter(ORGSUP_LOTACAO != ORGSUP_EXERCICIO) %>%
+  group_by(DESCRICAO_CARGO) %>%
+  summarise(qtd = n()) %>%
+  arrange(desc(qtd)) %>%
+  head(qtd,n = 5) %>%
+  ungroup() %>%
+  pull(DESCRICAO_CARGO) -> cargos_diferente_lotacao
 
 ### 3 ####
 ## 
@@ -49,3 +62,17 @@ salarios %>% filter(DESCRICAO_CARGO %in% c("MINISTRO DE PRIMEIRA CLASSE", "ANALI
 ## 
 ### # ####
 
+salarios %>%
+  filter(DESCRICAO_CARGO %in% cargos_diferente_lotacao) %>%
+  group_by(DESCRICAO_CARGO, ORGAO_DIFERENTE = ORGSUP_LOTACAO != ORGSUP_EXERCICIO) %>%
+  summarise(MEDIA_SALARIAL = mean(REMUNERACAO_FINAL),
+            DESVIO_PADRAO = sd(REMUNERACAO_FINAL),
+            MEDIANA = median(REMUNERACAO_FINAL),
+            DESVIO_ABSOLUTO_MEDIANA = median( abs( REMUNERACAO_FINAL - median( REMUNERACAO_FINAL ))),
+            MAIOR_SALARIO = max(REMUNERACAO_FINAL),
+            MENOR_SALARIO = min(REMUNERACAO_FINAL)) %>%
+  ungroup()
+
+#Os valores por lotação dentro de um mesmo cargo são parecidos, percebemos uma diferença, porém,
+#nos valores do Desvio Absoluto da Mediana, onde o valor é bem maior (praticamente o dobro) para 
+#os casos em que os servidores estão lotados em orgãos diferentes.
