@@ -63,31 +63,19 @@ ted_talks %>%
 # menor ou igual à quantidade do quarto quantil.
 
 
-
-
 # Verifique novamente o resumo dos dados do dataframe
-
-
 
 
 # Verifique os 10 registros com maior duração.
 
 
-
-
 # Existem apresentações com duração maior que 3 desvios padrão acima da média? Liste elas
-
-
 
 
 # Calcule os 4 quartis e o IQR da duração das apresentações. Liste as apresentações cuja duração supera 1.5 * o IQR + o terceiro quartil
 
 
-
-
 # Visualize os 10 quantis da quantidade de visualizações
-
-
 
 
 # Compare as seguintes estatísticas descritivas da quantidade de visualizações:
@@ -98,18 +86,12 @@ ted_talks %>%
 #     você conclui que as quantidades de visualização estão distribuidas de forma simétrica em torno da média?
 
 
-
-
 # Calcule a média, o desvio padrão, a mediana e o IQR da quantidade de línguas dos seguintes grupos:
 #     * 10% de vídeos com maior número de visualizações
 #     * 10% de vídeos com menor número de visualizações
 
 
-
-
 # Determine a quantidade de apresentações por evento cujo nome inicie com TED. Utilize a função str_detect para este filtro
-
-
 
 
 # Determine, por evento cujo nome inicie com TED e que a quantidade de visualizações dos vídeos foi maior que a mediana calculada anteriormente.
@@ -121,8 +103,6 @@ ted_talks %>%
 ### EXIBA SOMENTE OS EVENTOS COM MAIS DE 10 APRESENTAÇÕES
 
 
-
-
 # Calcule e classifique as seguintes correlações
 #     * Quantidade de visualizações e Quantidade de línguas
 #     * Quantidade de visualizações e Duração
@@ -130,16 +110,9 @@ ted_talks %>%
 #     * Quantidade de Comentários e Quantidade de línguas
 
 
-
-
 # Descarte os vídeos cuja duração seja maior que 3 desvios padrões da média. Calcule novamente as 5 correlações solicitadas
-
-
 
 
 # Utilizando o data frame original, crie um dataframe com a mediana da duração dos vídeos por ano de filmagem. Calcule a correlação entre o ano e a mediana da duração
 # e interprete o resultado
-
-
-
 
