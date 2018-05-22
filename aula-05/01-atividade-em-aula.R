@@ -1,60 +1,66 @@
 # Carregue a biblioteca tidyverse. Lembre que outras bibliotecas serão carregadas junto ao tidyverse
-
-
-
+library(tidyverse)
 
 # Crie um dataframe com o conteúdo do arquivo ted_main.csv.gz. 
+ted_talks <- read_csv("aula-05/data/ted_main.csv.gz")
 
-
-
-
-# Visualize o resumo dos dados do dataframe. Verifique os mínimos, máximos, médias e medianas das variáveis numéricas.
+# Visualize o resumo dos dados do dataframe. 
+# Verifique os mínimos, máximos, médias e medianas das variáveis numéricas.
 # As variáveis duration, film_date e published_date estão no tipo de dados apropriado?
-
-
-
+summary(ted_talks)
 
 # Converta as seguintes variáveis utilizando o pacote Lubridate:
-#     * duration, para duração (em segundos). Experimente utilizar as funções as.duration e duration. Mantenha aquela que considerar mais apropriada.
+#     * duration, para duração (em segundos). 
+#     Experimente utilizar as funções as.duration e duration. 
+#     Mantenha aquela que considerar mais apropriada.
 #     * film_date, para data, com a função as_datetime.
 #     * published_date, para data, com a função as_datetime..
+library(lubridate)
 
-
-
+ted_talks %>%
+mutate(
+    duration2 = as.duration(duration),
+    film_date2 = as_datetime(film_date),
+    published_date2 = as_datetime(published_date))-> ted_talks
 
 # Converta as seguintes variáveis character para variáveis categóricas com a função factor.
 #     * event
 #     * speaker_occupation
-
-
-
+ted_talks %>%
+  mutate(
+    event2 = factor(event),
+    speaker_occupation2 = factor(speaker_occupation)) -> ted_talks
 
 # Retire do dataframe a variável name
+ted_talks$name <- NULL
 
-
-
-
-# Visualize novamente o resumo dos dados do dataframe. Verifique os mínimos, máximos, médias e medianas das variáveis numéricas. Verifique as contagens das variáveis categóricas
-
-
-
-
-# Verifique quais registros possuem a menor quantidade de línguas. Corrija para que possuam no mínimo 1 idioma.
-
-
-
+ted_talks %>%
+  select(-name) -> ted_talks
+  
+# Visualize novamente o resumo dos dados do dataframe. 
+# Verifique os mínimos, máximos, médias e medianas das variáveis numéricas. 
+# Verifique as contagens das variáveis categóricas
+summary(ted_talks)
+  
+# Verifique quais registros possuem a menor quantidade de línguas. 
+# Corrija para que possuam no mínimo 1 idioma.
+ted_talks %>%
+  mutate(languages = replace(languages, languages == 0,1)) -> ted_talks
 
 # Verifique os 15 registros com menor data de filmagem. 
-
-
-
+ted_talks %>%
+  head(published_date2, n = 15) %>%
+  View()
 
 # Crie um dataframe com a contagem de apresentações por ano de filmagem e visualize todo o seu conteúdo
-
-
-
+ted_talks %>%
+  group_by(ano_filmagem = year(film_date2)) %>%
+  summarise (qtd = n()) -> apresentacoes_por_ano
+  
 # Analise os 10 quantis da quantidade de apresentações por ano.
-# Descarte, do data frame de apresentações do TED Talks, aqueles cujo ano de filmagem tiver quantidade de apresentações menor ou igual à quantidade do quarto quantil.
+# Descarte, do data frame de apresentações do TED Talks, 
+# aqueles cujo ano de filmagem tiver quantidade de apresentações 
+# menor ou igual à quantidade do quarto quantil.
 
 
 
