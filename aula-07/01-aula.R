@@ -41,6 +41,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, out.width =
 ## ----"Simulação de Jogo de Dados"----------------------------------------
 set.seed(201806)
 (tb_dados <- table(purrr::rdunif(10000, a=1, b=6)))
+# 1 / 6
 
 #' 
 #' Proporcionalmente:
@@ -261,9 +262,44 @@ pgeom(6, prob=0.1, lower.tail = TRUE)
 #' 
 #' >> ATIVIDADE EM AULA
 #' 
-#' 1. Faça o gráfico da distribuição de probabilidades de chamadas telefônicas até 20 ligações e simule 500 eventos de Bernoulli para esta mesma probabilidade. Nesta simulação, identifique quantas sequências de 6 falhas ocorreram. Use como _seed_ os últimos 5 dígitos da sua matrícula. Veja no exemplo anterior o uso da função `rle`.
+#' 1. Faça o gráfico da distribuição de probabilidades de chamadas telefônicas até 20 ligações e simule 500 eventos de Bernoulli para esta mesma probabilidade. 
+#' Nesta simulação, identifique quantas sequências de 6 falhas ocorreram. Use como _seed_ os últimos 5 dígitos da sua matrícula. 
+#' Veja no exemplo anterior o uso da função `rle`.
+#'
+
+df_geom_probs <- data_frame(x = 0:20, y=pgeom(0:20, prob = 0.1) * 100)
+
+ggplot(df_geom_probs, aes(x=x, y=y)) +
+  geom_col() +
+  scale_x_continuous(name = "Tentativas até ser atendido", breaks=0:20) +
+  scale_y_continuous(name = "Prob (%)")
+#' Escala Ajustavel, retirar -=>  breaks=seq(from=0, to=50, by=5)) +
+  theme_light()
+
+
+set.seed(30118)
+
+pgeom(6, prob=0.1, lower.tail = TRUE)
+
+# Gera uma sequência de 500 eventos de falha / sucesso
+sample_falha_sucesso <- rbernoulli(500)
+
+# Conta a quantidade de sucesso em sequência e de falha em sequência
+seq_falha_sucesso <- rle(sample_falha_sucesso)
+
+# Quais as sequências de sucesso?
+seq_falha_sucesso$lengths[!seq_falha_sucesso$values]
+
+# Quantas sequências de 6 falhas ocorreram?
+length(which(seq_falha_sucesso$lengths[!seq_falha_sucesso$values] == 6))
+
+
+
+#' 2. Você criou um sistema para reclamações da demora do atendimento de ligações telefônicas durante quedas de conectividade da Internet, 
+#' e exige que os usuários acertem um CAPTCHA antes de postarem uma reclamação. 
+#' Você observou que a probabilidade de um usuário acertar o CAPTCHA exibido no seu sistema é de 70%. 
 #' 
-#' 2. Você criou um sistema para reclamações da demora do atendimento de ligações telefônicas durante quedas de conectividade da Internet, e exige que os usuários acertem um CAPTCHA antes de postarem uma reclamação. Você observou que a probabilidade de um usuário acertar o CAPTCHA exibido no seu sistema é de 70%. 
+#' 
 #' 
 #' - Seu sistema de monitoramento identificou que um usuário tentou 5 CAPTCHAS diferentes antes de conseguir reclamar do tempo de atendimento na última queda de conectividade. 
 #'     + Qual a probabilidade de um usuário acertar o CAPTCHA após 5 tentativas fracassadas? Qual o mínimo de tentativas para que a probabilidade seja maior que 50%?
