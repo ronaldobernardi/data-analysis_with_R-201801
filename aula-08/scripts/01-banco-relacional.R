@@ -2,7 +2,7 @@
 # install.packages("RSQLite")
 
 # Banco de Dados Relacional e Colunar de propósito analítico, embutido
-# install.packages("MonetDBLite")
+install.packages("MonetDBLite")
 
 # Biblioteca para objetos JSON
 # install.packages("jsonlite")
@@ -62,8 +62,8 @@ tb_ted_main %>%
 show_query( tb_ted_main )
 
 # Grava ted_main com novas colunas
-tb_ted_main    <- copy_to( my_db, tb_ted_main, name = "ted_main", overwrite = TRUE, temporary = FALSE )
-tb_ted_ratings <- copy_to( my_db, tb_ted_ratings, name = "ted_ratings", overwrite = TRUE, temporary = FALSE )
+tb_ted_main    <- copy_to( my_db, tb_ted_main, name = "ted_main_AULA", overwrite = TRUE, temporary = FALSE )
+tb_ted_ratings <- copy_to( my_db, tb_ted_ratings, name = "ted_ratings_AULA", overwrite = TRUE, temporary = FALSE )
 
 # Encerra conexão
 MonetDBLite::monetdblite_shutdown()
@@ -82,3 +82,6 @@ head(teds, 10)
 head(teds, 10) %>% show_query()
 
 MonetDBLite::monetdblite_shutdown()
+
+#Carregando arquivo aula
+knitr::purl("aula-08/notebooks/01_testes.Rmd",documentation = 2)

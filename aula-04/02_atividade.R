@@ -1,6 +1,6 @@
 library(tidyverse)
 library(lubridate)
-library(dplyr)
+
 ## Nesta atividade você deve utilizar o resultado do exercício 01 da Atividade da aula 03 (remuneração em dólares convertida para reais)
 ## Utilize o código daquele exercício como ponto de partida para esta atividade. 
 ## Sempre utilize o caminho relativo, não o caminho absoluto, pois não funcionará na correção do exercício.
@@ -8,6 +8,13 @@ library(dplyr)
 ### IMPORTANTE ###
 ## Se você utilizar alguma função própria ou do material de aula, o código da(s) função(ões) deve estar neste arquivo da atividade.
 
+salarios <- read_csv("aula-03/data/201802_dados_salarios_servidores.csv.gz")
+
+cotacao_dolar <- 3.2428
+
+salarios %>%
+  mutate(REMUNERACAO_FINAL = REMUNERACAO_REAIS + (REMUNERACAO_DOLARES * cotacao_dolar)) %>%
+  filter(REMUNERACAO_FINAL >= 900) -> salarios
 
 ### 1 ####
 ## 
@@ -19,33 +26,25 @@ library(dplyr)
 ## - O resultado desta atividade deve ser um Data Frame com as variáveis de Cargo, Coeficiente de Correlação, Direção da Correlação e Força da Correlação
 ## 
 ### # ####
-salarios <- read_csv("aula-03/data/201802_dados_salarios_servidores.csv.gz")
-
-cotacaoDolar = 3.24
-salarios %>%
-  mutate(REMUNERACAO_FINAL = REMUNERACAO_REAIS + (REMUNERACAO_DOLARES * cotacaoDolar)) %>%
-  group_by(DESCRICAO_CARGO) %>%
-  summarize(qtdServidoresCargo = n()) %>%
-  ungroup() %>%
-  filter(qtdServidoresCargo > 200) %>%
-  pull(DESCRICAO_CARGO) -> cargos_200
-
 
 salarios %>%
-  filter(DESCRICAO_CARGO %in% cargos_200) %>%
   group_by(DESCRICAO_CARGO) %>%
-  summarize(correlacao = cor(year(DATA_INGRESSO_ORGAO), year(DATA_DIPLOMA_INGRESSO_SERVICOPUBLICO))) %>%
+  summarise(qtd = n()) %>%
+  filter(qtd >= 200) %>%
   ungroup() %>%
-  mutate(positivo_negativo = if_else(correlacao > 0,"Positivo","Negativo")
-         ,grau_correlacao = case_when(
-           abs(correlacao) >= 0.9 ~ "MUITO FORTE",
-           abs(correlacao) >= 0.7 ~ "FORTE",
-           abs(correlacao) >= 0.5 ~ "MODERADO",
-           abs(correlacao) >= 0.3 ~ "FRACO",
-           abs(correlacao) >= 0.0 ~ "DESPREZÍVEL"
-         )
-  ) -> df_Correlacao
+  pull(DESCRICAO_CARGO) -> cargos_acima_200
 
+salarios %>%
+  filter(DESCRICAO_CARGO %in% cargos_acima_200) %>%
+  group_by(DESCRICAO_CARGO) %>%
+  summarise(COEFICIENTE_CORRELACAO = cor(x = year(DATA_INGRESSO_ORGAO), y = year(DATA_DIPLOMA_INGRESSO_SERVICOPUBLICO ))) %>%
+  ungroup() %>%
+  mutate(CORRELACAO_DIRECAO = if_else(sign(COEFICIENTE_CORRELACAO) == 1, 'POSITIVA', 'NEGATIVA'),
+         CORRELACAO_FORCA = case_when(abs(COEFICIENTE_CORRELACAO) >= 0.0 & abs(COEFICIENTE_CORRELACAO) < 0.3 ~ 'DESPREZIVEL',
+                                      abs(COEFICIENTE_CORRELACAO) >= 0.3 & abs(COEFICIENTE_CORRELACAO) < 0.5 ~ 'FRACA',
+                                      abs(COEFICIENTE_CORRELACAO) >= 0.5 & abs(COEFICIENTE_CORRELACAO) < 0.7 ~ 'MODERADA',
+                                      abs(COEFICIENTE_CORRELACAO) >= 0.7 & abs(COEFICIENTE_CORRELACAO) < 0.9 ~ 'FORTE',
+                                      abs(COEFICIENTE_CORRELACAO) >= 0.9 ~ 'MUITO FORTE')) -> correlacao_ingresso_diploma
 
 ### 2 ###
 ##
@@ -57,26 +56,32 @@ salarios %>%
 ##
 ### # ###
 
-union(
-  df_Correlacao %>%
-    arrange(abs(correlacao)) %>%
-    head(10) %>% ## 10 mais fracos
-    pull(DESCRICAO_CARGO),
-  df_Correlacao %>%
-    arrange(abs(correlacao)) %>%
-    tail(10) %>% ## 10 mais fortes
-    pull(DESCRICAO_CARGO)
-) -> correlacoes_20
-
-
-salarios %>%
-  filter(DESCRICAO_CARGO %in% correlacoes_20) %>%
-  group_by(DESCRICAO_CARGO, ORGSUP_LOTACAO) %>%
-  summarize(moda_OrgaoLotacao = n()) %>% 
-  View()
+rbind(
+  correlacao_ingresso_diploma %>%
+    filter(CORRELACAO_FORCA == 'DESPREZIVEL') %>%
+    arrange(COEFICIENTE_CORRELACAO) %>%
+    head(COEFICIENTE_CORRELACAO, n = 10),
+  
+  correlacao_ingresso_diploma %>%
+    filter(CORRELACAO_FORCA == 'MUITO FORTE') %>%
+    arrange(desc(COEFICIENTE_CORRELACAO)) %>%
+    head(COEFICIENTE_CORRELACAO, n = 10)
+) -> correlacao_max_min
 
 salarios %>%
-  filter(DESCRICAO_CARGO %in% correlacoes_20) %>%
+  filter(DESCRICAO_CARGO %in% correlacao_max_min$DESCRICAO_CARGO) %>%
   group_by(DESCRICAO_CARGO, ORGSUP_EXERCICIO) %>%
-  summarize(moda_OrgaoExercicio = n()) %>%
-  View()
+  summarise(qtd = n()) %>%
+  mutate(qtd_max = max(qtd)) %>%
+  ungroup() %>%
+  filter(qtd_max == qtd) %>%
+  transmute(DESCRICAO_CARGO, ORGSUP_EXERCICIO, moda_exercicio = qtd_max)
+
+salarios %>%
+  filter(DESCRICAO_CARGO %in% correlacao_max_min$DESCRICAO_CARGO) %>%
+  group_by(DESCRICAO_CARGO, ORGSUP_LOTACAO) %>%
+  summarise(qtd = n()) %>%
+  mutate(qtd_max = max(qtd)) %>%
+  ungroup() %>%
+  filter(qtd_max == qtd) %>%
+  transmute(DESCRICAO_CARGO, ORGSUP_LOTACAO, moda_lotacao = qtd_max)
