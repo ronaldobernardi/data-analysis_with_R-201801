@@ -357,6 +357,7 @@ insta_orders %>%
     facet_wrap(~order_dow, ncol = 2)
 
 
+
 #22 # Teste se há diferença nas vendas por hora entre os dias 3 e 4 usando o teste de wilcoxon e utilizando a simulação da aula de testes
 
 insta_orders %>%
