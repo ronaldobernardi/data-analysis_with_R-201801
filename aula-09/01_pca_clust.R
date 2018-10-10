@@ -48,7 +48,8 @@ Sys.setlocale( locale = "pt_BR")
 ted_data <- read_csv("aula-09/data/ted_main.csv")
 
 #' 
-#' Vamos utilizar alguns dados ainda não explorados, as tags. Primeiro, será necessário extrair as tags da lista para uma variável
+#' Vamos utilizar alguns dados ainda não explorados, as tags. 
+#' Primeiro, será necessário extrair as tags da lista para uma variável
 #' 
 ## ------------------------------------------------------------------------
 ted_data %>%
